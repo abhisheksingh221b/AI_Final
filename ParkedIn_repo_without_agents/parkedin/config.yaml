@@ -1,0 +1,38 @@
+# ParkedIn settings. Every part of the project reads this file, so nothing is hard-coded.
+
+# Prices (Rs per hour)
+base_price: 40
+min_price: 20          # default lower limit for every lot (editable per lot on the Admin page)
+max_price: 100         # default upper limit for every lot
+price_step: 10         # prices move in Rs 10 steps
+fixed_price: 40        # the "no dynamic pricing" baseline used for comparison
+
+# Pricing goal
+target_occupancy: 0.85 # aim to keep each lot about 85% full
+# Grid-search score = revenue - over_weight * (occupancy above target)^2
+#                             - under_weight * (occupancy below target)^2
+# Chosen on the VALIDATION days (never the test days): the setting that raised revenue
+# above the fixed price while also moving occupancy closer to 85%.
+# Lower under_weight = higher prices and more revenue; higher = fuller lots.
+# Both can be changed live on the Admin page.
+over_weight: 2.0
+under_weight: 2.0
+
+# Assumed driver price sensitivity (the dataset never shows reactions to price).
+# occupancy_at_price = demand_at_base_price * (price / base_price) ** (-elasticity)
+elasticity: 0.4
+
+# Forecasting
+forecast_horizon: 6    # slots ahead (6 x 30 min = 3 hours)
+
+# Train / validation / test split by days (the test days are what the live demo replays)
+train_fraction: 0.70
+val_fraction: 0.15
+
+# Simulation
+tick_seconds: 5        # one replayed 30-minute slot every 5 seconds (changeable on the Admin page)
+
+# Forecast monitoring
+monitor_window: 36     # slots per lot used for the rolling error (36 slots = 2 days)
+drift_factor: 1.2      # alert when rolling error > 1.2 x test error
+auto_retrain: true     # let the monitor retrain the forecast models by itself on drift
